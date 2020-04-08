@@ -72,12 +72,12 @@ func (bpe *fastBPE) apply(tokens []string) []string {
 			}
 		}
 		wordBPEs = append(wordBPEs, token[lastStart:] + kEndWord)
-		result = append(result, bpe.process(wordBPEs))
+		result = append(result, bpe.process(wordBPEs)...)
 	}
 	return result
 }
 
-func (bpe *fastBPE) process(subwords []string) string {
+func (bpe *fastBPE) process(subwords []string) []string {
 	for len(subwords) > 1 {
 		var bestPair *pair
 		for i := 0; i < len(subwords) - 1; i++ {
@@ -106,11 +106,11 @@ func (bpe *fastBPE) process(subwords []string) string {
 		subwords = tmp
 	}
 	subwords = bpe.limitVocab(subwords)
-	var result string;
+	var tmp string;
 	for _, subword := range subwords {
-		result += subword + kTokenDelim + " "
+		tmp += subword + kTokenDelim + " "
 	}
-	return result[:len(result)-kEndWordLength-kTokenDelimLength-1]
+	return strings.Fields(tmp[:len(tmp)-kEndWordLength-kTokenDelimLength-1])
 }
 
 func (bpe *fastBPE) limitVocab(subwords []string) []string {
